@@ -2,9 +2,13 @@
   "name": "@bandeira-tech/b3nd-sink",
   "version": "0.0.0",
   "description": "B3nd egress layer: integrations with external services (LLM, messaging, email, payments, calendar). Early exploration; sinks are built case by case.",
-  "exports": {},
+  "exports": {
+    "./resend": "./src/resend/mod.ts"
+  },
   "exclude": [".claude/"],
-  "tasks": {},
+  "tasks": {
+    "resend:send-live": "deno run --allow-net --allow-env --env-file=.env src/resend/scripts/send-live.ts"
+  },
   "imports": {
     "@bandeira-tech/b3nd-core": "jsr:@bandeira-tech/b3nd-core@^0.22.0",
     "@std/assert": "jsr:@std/assert@^1.0.15"
