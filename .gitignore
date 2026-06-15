@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env*
+*.lock
+npm/
+.claude/worktrees/
+.DS_Store

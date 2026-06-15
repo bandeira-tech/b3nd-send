@@ -1,0 +1,26 @@
+{
+  "name": "@bandeira-tech/b3nd-sink",
+  "version": "0.0.0",
+  "description": "B3nd egress layer: integrations with external services (LLM, messaging, email, payments, calendar). Early exploration; sinks are built case by case.",
+  "exports": {},
+  "exclude": [".claude/"],
+  "tasks": {},
+  "imports": {
+    "@bandeira-tech/b3nd-core": "jsr:@bandeira-tech/b3nd-core@^0.22.0",
+    "@std/assert": "jsr:@std/assert@^1.0.15"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["require-await", "no-import-prefix", "no-unversioned-import"]
+    }
+  },
+  "compilerOptions": {
+    "strict": true,
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable",
+      "deno.ns"
+    ]
+  }
+}
