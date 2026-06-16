@@ -1,23 +1,35 @@
 /**
  * Live one-off test against the real Claude Agent SDK.
  *
- * Skipped unless `ANTHROPIC_API_KEY` is set in the environment. Run
- * with:
+ * Run with:
  *
  *   deno task test:live
  *
  * which loads `.env` and grants the permissions the SDK needs.
  *
- * Cost: one trivial chat turn. Pennies. The prompt asks for a one-word
- * reply so the run terminates quickly.
+ * ## Auth
+ *
+ * The Agent SDK picks up auth from, in order:
+ *
+ * 1. `ANTHROPIC_API_KEY` from env (incl. `.env`).
+ * 2. The Claude Code OAuth session in the OS keychain — i.e. if you
+ *    ran `claude` and logged in, the SDK uses that. No env var needed.
+ *
+ * The test only `ignore`s itself when neither is available. Detecting
+ * the keychain session without spawning the CLI is fiddly, so we
+ * always attempt the run and let the SDK report no-auth as a runner
+ * error (which the sink turns into a `summary` event with
+ * `stopReason: "runner_error"`).
+ *
+ * Cost: one trivial chat turn. Pennies on a paid plan, free under a
+ * Claude subscription's CLI auth. The prompt asks for a one-word reply
+ * so the run terminates quickly.
  */
 
 import { assert, assertEquals } from "@std/assert";
 import { query } from "npm:@anthropic-ai/claude-agent-sdk";
 import { ClaudeCodeSink } from "./client.ts";
 import type { RunEvent, Runner } from "./types.ts";
-
-const HAS_KEY = !!Deno.env.get("ANTHROPIC_API_KEY");
 
 /**
  * Adapter from the Agent SDK's `query()` to our `Runner` contract.
@@ -82,7 +94,6 @@ class Recorder {
 
 Deno.test({
   name: "live: real claude-code session drives the sink end-to-end",
-  ignore: !HAS_KEY,
   // The SDK can take a while on cold starts.
   sanitizeOps: false,
   sanitizeResources: false,

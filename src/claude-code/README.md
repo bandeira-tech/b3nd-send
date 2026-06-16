@@ -49,6 +49,20 @@ concern — out of band from this sink. Wire a memory store for tests, a
 real B3nd save client for production, a forwarder to push events back
 into a Rig, etc.
 
+## Auth (lives in the runner, not the sink)
+
+The sink holds no credentials. Whatever runner you inject brings its
+own. For the Agent SDK runner used by the live test
+(`src/claude-code/live.test.ts`), the SDK accepts auth from either:
+
+1. `ANTHROPIC_API_KEY` in env (the test's `.env` is one way to set it).
+2. The Claude Code OAuth session in the OS keychain — if you ran
+   `claude` and logged in, the SDK uses that automatically. No env
+   var needed.
+
+Subscription-CLI auth means you can exercise the sink end-to-end
+without provisioning an API key.
+
 ## Why injected runner
 
 The sink does not import the Claude Agent SDK. Callers inject a
