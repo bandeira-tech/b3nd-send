@@ -7,6 +7,9 @@
   },
   "exclude": [".claude/"],
   "tasks": {
+    "check": "deno check src/",
+    "test": "deno test src/claude-code/client.test.ts",
+    "test:live": "deno test --allow-all --env-file=.env src/claude-code/live.test.ts",
     "resend:send-live": "deno run --allow-net --allow-env --env-file=.env src/resend/scripts/send-live.ts"
   },
   "imports": {
