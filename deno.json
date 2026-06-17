@@ -11,7 +11,8 @@
     "check": "deno check src/",
     "test": "deno test src/claude-code/client.test.ts",
     "test:live": "deno test --allow-all --env-file=.env src/claude-code/live.test.ts",
-    "resend:send-live": "deno run --allow-net --allow-env --env-file=.env src/resend/scripts/send-live.ts"
+    "resend:send-live": "deno run --allow-net --allow-env --env-file=.env src/resend/scripts/send-live.ts",
+    "whatsapp:send-live": "deno run --allow-net --allow-env --env-file=.env src/whatsapp/scripts/send-live.ts"
   },
   "imports": {
     "@bandeira-tech/b3nd-core": "jsr:@bandeira-tech/b3nd-core@^0.22.0",
