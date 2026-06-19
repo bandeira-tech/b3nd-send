@@ -3,14 +3,16 @@
   "version": "0.0.0",
   "description": "B3nd egress layer: integrations with external services (LLM, messaging, email, payments, calendar). Early exploration; sinks are built case by case.",
   "exports": {
-    "./resend": "./src/resend/mod.ts"
+    "./resend": "./src/resend/mod.ts",
+    "./whatsapp": "./src/whatsapp/mod.ts"
   },
   "exclude": [".claude/"],
   "tasks": {
     "check": "deno check src/",
     "test": "deno test src/claude-code/client.test.ts",
     "test:live": "deno test --allow-all --env-file=.env src/claude-code/live.test.ts",
-    "resend:send-live": "deno run --allow-net --allow-env --env-file=.env src/resend/scripts/send-live.ts"
+    "resend:send-live": "deno run --allow-net --allow-env --env-file=.env src/resend/scripts/send-live.ts",
+    "whatsapp:send-live": "deno run --allow-net --allow-env --env-file=.env src/whatsapp/scripts/send-live.ts"
   },
   "imports": {
     "@bandeira-tech/b3nd-core": "jsr:@bandeira-tech/b3nd-core@^0.22.0",
