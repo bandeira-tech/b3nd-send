@@ -19,6 +19,7 @@
     "src/**/*.ts",
     "../src/whatsapp/sink.ts",
     "../src/whatsapp/webhook.ts",
+    "../src/whatsapp/transport.ts",
     "../src/whatsapp/types.ts",
     "../src/whatsapp/uris.ts",
     "../src/whatsapp/mod.ts"
