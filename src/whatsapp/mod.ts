@@ -1,11 +1,17 @@
-export {
-  createWhatsAppSink,
-  URI_INBOUND_PREFIX,
-  URI_MESSAGES_PREFIX,
-  URI_STATUS_PREFIX,
-  type WhatsAppSink,
-} from "./sink.ts";
+export { createWhatsAppSink, type WhatsAppSink } from "./sink.ts";
 export { createWebhook, type WhatsAppWebhook } from "./webhook.ts";
+export {
+  DEFAULT_BASE_PATH,
+  inboundPattern,
+  inboundUri,
+  messagesPattern,
+  messagesUri,
+  statusPattern,
+  statusUri,
+  validateBasePath,
+  whatsappUris,
+  type WhatsAppUris,
+} from "./uris.ts";
 export type {
   NormalizedInbound,
   NormalizedInboundMessage,

@@ -25,7 +25,7 @@
  * WA_TEMPLATE_NAME unset (defaults to `hello_world`) on the first run.
  */
 
-import { createWhatsAppSink, URI_MESSAGES_PREFIX } from "../mod.ts";
+import { createWhatsAppSink } from "../mod.ts";
 import type { WhatsAppMessage } from "../mod.ts";
 
 const phoneNumberId = Deno.env.get("WA_PHONE_NUMBER_ID");
@@ -63,7 +63,7 @@ console.log(
 );
 
 const [result] = await sink.receive([[
-  `${URI_MESSAGES_PREFIX}${to}`,
+  sink.uris.messages(to),
   { message },
 ]]);
 

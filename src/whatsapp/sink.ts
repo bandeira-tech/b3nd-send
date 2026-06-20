@@ -6,12 +6,12 @@ import {
   type ReceiveResult,
   type StatusResult,
 } from "@bandeira-tech/b3nd-core";
+import { createWebhook, type WhatsAppWebhook } from "./webhook.ts";
 import {
-  createWebhook,
-  URI_INBOUND_PREFIX,
-  URI_STATUS_PREFIX,
-  type WhatsAppWebhook,
-} from "./webhook.ts";
+  DEFAULT_BASE_PATH,
+  whatsappUris,
+  type WhatsAppUris,
+} from "./uris.ts";
 import type {
   WhatsAppErrorResponse,
   WhatsAppSendPayload,
@@ -21,11 +21,11 @@ import type {
 
 const DEFAULT_BASE_URL = "https://graph.facebook.com";
 const DEFAULT_GRAPH_VERSION = "v21.0";
-export const URI_MESSAGES_PREFIX = "whatsapp://messages/";
-export { URI_INBOUND_PREFIX, URI_STATUS_PREFIX };
 
 export interface WhatsAppSink extends ProtocolInterfaceNode {
   webhook: WhatsAppWebhook;
+  /** URI helpers bound to the sink's mount basePath. */
+  uris: WhatsAppUris;
 }
 
 export function createWhatsAppSink(config: WhatsAppSinkConfig): WhatsAppSink {
@@ -36,6 +36,9 @@ export function createWhatsAppSink(config: WhatsAppSinkConfig): WhatsAppSink {
     throw new Error("createWhatsAppSink: accessToken is required");
   }
 
+  const uris = whatsappUris(config.basePath ?? DEFAULT_BASE_PATH);
+  const messagesPrefix = `${uris.basePath}messages/`;
+
   const baseUrl = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
   const version = config.graphVersion ?? DEFAULT_GRAPH_VERSION;
   const fetchImpl = config.fetch ?? globalThis.fetch.bind(globalThis);
@@ -45,21 +48,22 @@ export function createWhatsAppSink(config: WhatsAppSinkConfig): WhatsAppSink {
   const webhook = createWebhook({
     appSecret: config.appSecret,
     verifyToken: config.verifyToken,
+    basePath: uris.basePath,
   });
 
   async function sendOne(
     uri: string,
     payload: WhatsAppSendPayload,
   ): Promise<ReceiveResult> {
-    if (!uri.startsWith(URI_MESSAGES_PREFIX)) {
+    if (!uri.startsWith(messagesPrefix)) {
       return refusal(ErrorCode.INVALID_URI, uri, `Unknown uri: ${uri}`);
     }
-    const to = uri.slice(URI_MESSAGES_PREFIX.length);
+    const to = uri.slice(messagesPrefix.length);
     if (!to) {
       return refusal(
         ErrorCode.INVALID_URI,
         uri,
-        "Missing recipient in uri (expected whatsapp://messages/<E164>)",
+        `Missing recipient in uri (expected ${messagesPrefix}<E164>)`,
       );
     }
     if (!payload?.message?.type) {
@@ -118,6 +122,7 @@ export function createWhatsAppSink(config: WhatsAppSinkConfig): WhatsAppSink {
 
   return {
     webhook,
+    uris,
     receive(msgs: Output[]): Promise<ReceiveResult[]> {
       return Promise.all(
         msgs.map(([uri, payload]) =>
@@ -146,11 +151,11 @@ export function createWhatsAppSink(config: WhatsAppSinkConfig): WhatsAppSink {
       return Promise.resolve({
         status: "healthy",
         message:
-          "whatsapp sink: egress + webhook parse; no live healthcheck in v0",
+          `whatsapp sink mounted at '${uris.basePath}' (egress + webhook parse)`,
         schema: [
-          `${URI_MESSAGES_PREFIX}*`,
-          `${URI_INBOUND_PREFIX}*`,
-          `${URI_STATUS_PREFIX}*`,
+          uris.messagesPattern,
+          uris.inboundPattern,
+          uris.statusPattern,
         ],
       });
     },

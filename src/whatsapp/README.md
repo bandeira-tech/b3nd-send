@@ -14,17 +14,18 @@ deliberately chosen to surface the design tension VISION calls out
 ### Outbound
 
 ```ts
-import { createWhatsAppSink, URI_MESSAGES_PREFIX } from "./mod.ts";
+import { createWhatsAppSink } from "./mod.ts";
 
 const sink = createWhatsAppSink({
   phoneNumberId: Deno.env.get("WA_PHONE_NUMBER_ID")!,
   accessToken: Deno.env.get("WA_ACCESS_TOKEN")!,
   appSecret: Deno.env.get("WA_APP_SECRET")!,
   verifyToken: Deno.env.get("WA_VERIFY_TOKEN")!,
+  // basePath defaults to `whatsapp://`. Override to mount elsewhere.
 });
 
 const [result] = await sink.receive([[
-  `${URI_MESSAGES_PREFIX}+15555550100`,
+  sink.uris.messages("+15555550100"),
   {
     message: { type: "text", text: { body: "Hello from B3nd" } },
     bizOpaqueCallbackData: "corr-1",
@@ -33,6 +34,34 @@ const [result] = await sink.receive([[
 
 if (!result.accepted) console.error(result.errorDetail);
 ```
+
+### Mounting under a different basePath
+
+Per b3nd-skill's PROTOCOL.md ("Mount basepaths so users keep control of
+their data"), the sink's URI prefix is configurable. The shape on the
+wire is identical; what changes is *where on the rig* the sink lives:
+
+```ts
+import { createWhatsAppSink, whatsappUris } from "./mod.ts";
+
+const sink = createWhatsAppSink({
+  ...,
+  basePath: "signed://0xabc.../whatsapp/",
+});
+
+// URI helpers are the only public way to build URIs:
+const uris = whatsappUris("signed://0xabc.../whatsapp/");
+await sink.receive([[uris.messages("+15555550100"), { message: ... }]]);
+
+// Or use sink.uris (bound to the sink's own basePath):
+await sink.receive([[sink.uris.messages("+15555550100"), { message: ... }]]);
+```
+
+Hard-coding `"whatsapp://messages/..."` in caller code is a leak —
+breaks the mount-point abstraction and prevents multi-tenancy on the
+same rig. The factory validates basePath (must end with `/`, must
+contain `://`) and surfaces it in `status().message` and
+`status().schema`.
 
 ### Inbound webhook
 
@@ -63,15 +92,28 @@ package.
 
 ## URIs
 
-| URI                              | Direction | Source                       |
-| -------------------------------- | --------- | ---------------------------- |
-| `whatsapp://messages/<E164>`     | write     | caller → `receive`           |
-| `whatsapp://inbound/<E164>`      | inbound   | webhook → `webhook.parse`    |
-| `whatsapp://status/<wamid>`      | inbound   | webhook → `webhook.parse`    |
+Default basePath is `whatsapp://` (overridable; see "Mounting under a
+different basePath" above).
 
-The three prefixes are deliberately split so apps route them through
-distinct downstream nodes (an inbound message and a delivery status are
-not the same thing).
+| URI shape                          | Direction | Source                       |
+| ---------------------------------- | --------- | ---------------------------- |
+| `<basePath>messages/<E164>`        | write     | caller → `receive`           |
+| `<basePath>inbound/<E164>`         | inbound   | webhook → `webhook.parse`    |
+| `<basePath>status/<wamid>`         | inbound   | webhook → `webhook.parse`    |
+
+The three sub-prefixes are deliberately split so apps route them
+through distinct downstream nodes (an inbound message and a delivery
+status are not the same thing).
+
+Build URIs via the exported helpers — never concatenate `basePath`
+yourself:
+
+```ts
+sink.uris.messages("+15555550100")     // → <basePath>messages/+15555550100
+sink.uris.inbound("+15555550100")      // → <basePath>inbound/+15555550100
+sink.uris.status("wamid.xyz")          // → <basePath>status/wamid.xyz
+sink.uris.messagesPattern              // → <basePath>messages/**
+```
 
 ## Payload shape
 
