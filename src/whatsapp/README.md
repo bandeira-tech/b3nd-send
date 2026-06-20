@@ -84,8 +84,64 @@ await rig.receive(tuples);
 ```
 
 `webhook.parse` returns tuples rather than pushing them into a node so
-the sink stays decoupled from your transport. If usage shows everyone
-hand-wires it the same way, we'll likely wrap a node around it later.
+the sink stays decoupled from your transport. For the common case —
+parsing a request and forwarding to a rig — see `createWhatsAppHttpService`
+below.
+
+### HTTP transport (move-shaped)
+
+`createWhatsAppHttpService` wraps the webhook with a `fetch(req) =>
+Response | null` handler that drops into any framework with the
+Fetch API: Cloudflare Workers, `Deno.serve`, Hono, Bun. It owns the
+GET handshake, signature verification, envelope decode, and forwarding
+into a downstream `receive` (typically `rig.receive.bind(rig)`).
+
+```ts
+import { createWebhook, createWhatsAppHttpService } from "./mod.ts";
+
+const webhook = createWebhook({
+  appSecret: env.WA_APP_SECRET,
+  verifyToken: env.WA_VERIFY_TOKEN,
+});
+
+const service = createWhatsAppHttpService({
+  webhook,
+  receive: (tuples) => rig.receive(tuples),
+  pathPrefix: "/whatsapp", // optional; default `/whatsapp`
+});
+
+export default {
+  async fetch(req: Request): Promise<Response> {
+    const res = await service.fetch(req);
+    return res ?? new Response("not found", { status: 404 });
+  },
+};
+```
+
+Status codes:
+
+| Situation                            | Code |
+| ------------------------------------ | ---- |
+| GET handshake, token matches         | 200  |
+| GET handshake, token mismatch        | 403  |
+| POST, signature verifies + parses    | 200  |
+| POST, signature mismatch             | 401  |
+| POST, valid signature, bad JSON      | 400  |
+| POST, downstream `receive` throws    | 502 (Meta retries) |
+| Method not GET/POST                  | 405  |
+| Misconfiguration (no appSecret/verifyToken) | 500 |
+| Path outside `pathPrefix`            | returns `null` so the caller composes their own response |
+
+**Why this is structurally a `b3nd-move` transport, not a sink helper.**
+Move's job is to bridge a wire format ↔ a mounted rig. The whatsapp
+webhook fits that mould exactly — it's just HTTP with a Meta-specific
+envelope, HMAC-signed body, and a one-off verification handshake. The
+service lives in `b3nd-sink/whatsapp` for now because forking
+`b3nd-move` for a single stop-gap iteration would stall this work; the
+shape here is the spec for the eventual move-side implementation. The
+encoder pieces (`webhook.verifySignature`, `webhook.parse`) stay where
+they are even once the transport moves — they're the wire dialect, not
+the HTTP plumbing.
 
 Credentials are injected at construction. No env reads inside the
 package.

@@ -1,6 +1,11 @@
 export { createWhatsAppSink, type WhatsAppSink } from "./sink.ts";
 export { createWebhook, type WhatsAppWebhook } from "./webhook.ts";
 export {
+  createWhatsAppHttpService,
+  type WhatsAppHttpService,
+  type WhatsAppHttpServiceConfig,
+} from "./transport.ts";
+export {
   DEFAULT_BASE_PATH,
   inboundPattern,
   inboundUri,

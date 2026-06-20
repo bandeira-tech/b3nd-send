@@ -6,7 +6,8 @@
     "./resend": "./src/resend/mod.ts",
     "./whatsapp": "./src/whatsapp/mod.ts"
   },
-  "exclude": [".claude/"],
+  "exclude": [".claude/", "node_modules/"],
+  "nodeModulesDir": "auto",
   "tasks": {
     "check": "deno check src/",
     "test": "deno test src/claude-code/client.test.ts",
