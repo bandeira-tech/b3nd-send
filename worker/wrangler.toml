@@ -1,0 +1,19 @@
+name = "whatsapp-rig"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+# Observability — leave enabled so we can `wrangler tail` and read
+# logs after deploy without a redeploy.
+[observability]
+enabled = true
+
+# Vars vs secrets:
+#   - WA_PHONE_NUMBER_ID lives as a plain var (not sensitive in
+#     isolation; it's also visible to anyone who pings /healthz).
+#   - WA_ACCESS_TOKEN, WA_APP_SECRET, WA_VERIFY_TOKEN live as wrangler
+#     secrets (`wrangler secret put <name>`). They never appear here.
+#   - WA_TO_DEFAULT is set as a var for the smoke endpoint so the
+#     deploy URL can be hit without parameters; override per-request
+#     with ?to=+...
+[vars]
+WA_PHONE_NUMBER_ID = ""
+WA_TO_DEFAULT = ""

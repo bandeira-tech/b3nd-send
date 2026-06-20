@@ -6,3 +6,8 @@ dist/
 npm/
 .claude/worktrees/
 .DS_Store
+
+# Wrangler / Cloudflare local state
+.wrangler/
+worker/dist/
+worker/.wrangler/
