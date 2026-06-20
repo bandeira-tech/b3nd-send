@@ -1,0 +1,20 @@
+{
+  "name": "b3nd-sink-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "npm sidecar for deploying b3nd-sink targets as Cloudflare Workers. Library tests still run via Deno against deno.json — see worker/ for the deploy artefacts.",
+  "type": "module",
+  "scripts": {
+    "worker:dev": "wrangler --config worker/wrangler.toml dev",
+    "worker:deploy": "wrangler --config worker/wrangler.toml deploy",
+    "worker:tail": "wrangler --config worker/wrangler.toml tail"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260619.1",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.103.0"
+  },
+  "dependencies": {
+    "@bandeira-tech/b3nd-core": "npm:@jsr/bandeira-tech__b3nd-core@^0.22.0"
+  }
+}
