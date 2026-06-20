@@ -60,6 +60,15 @@ export interface WhatsAppSinkConfig {
   baseUrl?: string;
   /** Inject a fetch implementation — useful for tests. */
   fetch?: typeof globalThis.fetch;
+  /**
+   * Mount basePath. Defaults to `whatsapp://`. Must end with `/` and
+   * contain `://`. The sink writes outbound URIs under
+   * `<basePath>messages/<E164>` and the webhook decoder emits inbound
+   * URIs under `<basePath>inbound/<E164>` and `<basePath>status/<wamid>`.
+   * Deployers mount multiple sinks under different basePaths to host
+   * multi-tenant traffic on one rig.
+   */
+  basePath?: string;
 }
 
 /** Payload accepted by the sink for `whatsapp://messages/<E164>`. */

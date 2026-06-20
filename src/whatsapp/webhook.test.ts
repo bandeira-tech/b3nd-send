@@ -1,5 +1,10 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import { createWhatsAppSink, URI_INBOUND_PREFIX, URI_STATUS_PREFIX } from "./mod.ts";
+import {
+  createWhatsAppSink,
+  DEFAULT_BASE_PATH,
+  inboundUri,
+  statusUri,
+} from "./mod.ts";
 import type { NormalizedInbound } from "./mod.ts";
 
 const config = {
@@ -145,8 +150,8 @@ Deno.test("webhook.parse: emits inbound + status tuples on valid signature", asy
 
   assertEquals(tuples.length, 2);
 
-  const [inboundUri, inboundPayload] = tuples[0];
-  assertEquals(inboundUri, `${URI_INBOUND_PREFIX}15555550100`);
+  const [inUri, inboundPayload] = tuples[0];
+  assertEquals(inUri, inboundUri(DEFAULT_BASE_PATH, "15555550100"));
   const msg = inboundPayload as Extract<NormalizedInbound, { kind: "message" }>;
   assertEquals(msg.kind, "message");
   assertEquals(msg.messageId, "wamid.INBOUND1");
@@ -155,14 +160,26 @@ Deno.test("webhook.parse: emits inbound + status tuples on valid signature", asy
   assertEquals(msg.type, "text");
   assertEquals(msg.text, "hi there");
 
-  const [statusUri, statusPayload] = tuples[1];
-  assertEquals(statusUri, `${URI_STATUS_PREFIX}wamid.OUT1`);
+  const [stUri, statusPayload] = tuples[1];
+  assertEquals(stUri, statusUri(DEFAULT_BASE_PATH, "wamid.OUT1"));
   const st = statusPayload as Extract<NormalizedInbound, { kind: "status" }>;
   assertEquals(st.kind, "status");
   assertEquals(st.messageId, "wamid.OUT1");
   assertEquals(st.status, "delivered");
   assertEquals(st.recipient, "15555550100");
   assertEquals(st.bizOpaqueCallbackData, "corr-1");
+});
+
+Deno.test("webhook.parse: emits tuples under a custom basePath", async () => {
+  const basePath = "signed://0xabc/whatsapp/";
+  const sink = createWhatsAppSink({ ...config, basePath });
+  const body = JSON.stringify(sampleEnvelope);
+  const sig = `sha256=${await signHex("secret", body)}`;
+  const tuples = await sink.webhook.parse(body, sig);
+
+  assertEquals(tuples.length, 2);
+  assertEquals(tuples[0][0], inboundUri(basePath, "15555550100"));
+  assertEquals(tuples[1][0], statusUri(basePath, "wamid.OUT1"));
 });
 
 Deno.test("webhook.parse: throws on signature mismatch", async () => {

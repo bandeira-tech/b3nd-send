@@ -1,4 +1,10 @@
 import type { Output } from "@bandeira-tech/b3nd-core";
+import {
+  DEFAULT_BASE_PATH,
+  inboundUri,
+  statusUri,
+  validateBasePath,
+} from "./uris.ts";
 import type {
   NormalizedInbound,
   NormalizedInboundMessage,
@@ -10,12 +16,12 @@ import type {
   WhatsAppWebhookValue,
 } from "./types.ts";
 
-export const URI_INBOUND_PREFIX = "whatsapp://inbound/";
-export const URI_STATUS_PREFIX = "whatsapp://status/";
-
 export interface WebhookConfig {
   appSecret?: string;
   verifyToken?: string;
+  /** Mount basePath. Defaults to `whatsapp://`. Must end with `/`
+   *  and contain `://` (validated). */
+  basePath?: string;
 }
 
 export interface WhatsAppWebhook {
@@ -36,8 +42,8 @@ export interface WhatsAppWebhook {
   /**
    * Verify signature, then parse the body into B3nd tuples.
    *
-   *   inbound messages → [`whatsapp://inbound/<E164>`, NormalizedInboundMessage]
-   *   delivery statuses → [`whatsapp://status/<wamid>`, NormalizedInboundStatus]
+   *   inbound messages → [`<basePath>inbound/<E164>`, NormalizedInboundMessage]
+   *   delivery statuses → [`<basePath>status/<wamid>`, NormalizedInboundStatus]
    *
    * Throws on signature mismatch (treated as a transport-layer attack
    * surface, not a domain refusal). Malformed JSON throws too.
@@ -50,6 +56,8 @@ export interface WhatsAppWebhook {
 
 export function createWebhook(config: WebhookConfig): WhatsAppWebhook {
   const { appSecret, verifyToken } = config;
+  const basePath = config.basePath ?? DEFAULT_BASE_PATH;
+  validateBasePath(basePath);
 
   return {
     verify(query) {
@@ -94,13 +102,14 @@ export function createWebhook(config: WebhookConfig): WhatsAppWebhook {
         throw new Error("whatsapp webhook: signature verification failed");
       }
       const env = JSON.parse(rawBody) as WhatsAppWebhookEnvelope;
-      return extractTuples(env);
+      return extractTuples(env, basePath);
     },
   };
 }
 
 function extractTuples(
   env: WhatsAppWebhookEnvelope,
+  basePath: string,
 ): Output<NormalizedInbound>[] {
   const out: Output<NormalizedInbound>[] = [];
   if (!env?.entry) return out;
@@ -112,13 +121,13 @@ function extractTuples(
       const to = value.metadata?.display_phone_number;
       for (const m of value.messages ?? []) {
         out.push([
-          `${URI_INBOUND_PREFIX}${m.from}`,
+          inboundUri(basePath, m.from),
           normalizeMessage(m, to),
         ]);
       }
       for (const s of value.statuses ?? []) {
         out.push([
-          `${URI_STATUS_PREFIX}${s.id}`,
+          statusUri(basePath, s.id),
           normalizeStatus(s),
         ]);
       }
