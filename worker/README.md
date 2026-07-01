@@ -1,12 +1,12 @@
 # whatsapp-rig — Cloudflare Worker
 
-A thin HTTPS shim that mounts the `b3nd-sink/whatsapp` client and
+A thin HTTPS shim that mounts the `b3nd-send/whatsapp` client and
 exposes its `receive` surface. Built to satisfy the "node up to dream
 against" goal of the [whatsapp network deployment umbrella][umbrella] —
 later iterations will layer the move-side webhook ingress and storage
 on top.
 
-[umbrella]: https://github.com/bandeira-tech/b3nd-sink/pull/5
+[umbrella]: https://github.com/bandeira-tech/b3nd-send/pull/5
 
 ## Routes
 

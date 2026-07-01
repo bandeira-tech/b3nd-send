@@ -27,7 +27,7 @@ if (!apiKey) {
 const from = Deno.env.get("RESEND_FROM") ?? "onboarding@resend.dev";
 const to = Deno.env.get("RESEND_TO") ?? "raf@bandeira.tech";
 const subject = Deno.env.get("RESEND_SUBJECT") ??
-  `b3nd-sink resend smoke ${new Date().toISOString()}`;
+  `b3nd-send resend smoke ${new Date().toISOString()}`;
 
 const sink = createResendSink({ apiKey });
 
@@ -41,7 +41,7 @@ const results = await sink.receive([[
       to,
       subject,
       text:
-        `This is a smoke test from b3nd-sink/resend.\n\nSent at ${new Date().toISOString()}.`,
+        `This is a smoke test from b3nd-send/resend.\n\nSent at ${new Date().toISOString()}.`,
     },
   },
 ]]);
