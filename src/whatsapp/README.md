@@ -5,7 +5,7 @@ WhatsApp Cloud API egress + inbound webhook parsing. Implements
 other client; the webhook side is exposed as a separate helper that
 returns B3nd tuples, keeping the sink HTTP-framework-agnostic.
 
-This sink is the first one in `b3nd-sink` to be **bidirectional** — it's
+This sink is the first one in `b3nd-send` to be **bidirectional** — it's
 deliberately chosen to surface the design tension VISION calls out
 ("what does a bidirectional sink look like").
 
@@ -136,7 +136,7 @@ Status codes:
 Move's job is to bridge a wire format ↔ a mounted rig. The whatsapp
 webhook fits that mould exactly — it's just HTTP with a Meta-specific
 envelope, HMAC-signed body, and a one-off verification handshake. The
-service lives in `b3nd-sink/whatsapp` for now because forking
+service lives in `b3nd-send/whatsapp` for now because forking
 `b3nd-move` for a single stop-gap iteration would stall this work; the
 shape here is the spec for the eventual move-side implementation. The
 encoder pieces (`webhook.verifySignature`, `webhook.parse`) stay where

@@ -1,4 +1,4 @@
-# CLAUDE.md — b3nd-sink
+# CLAUDE.md — b3nd-send
 
 Read [VISION.md](./VISION.md) first. It defines what a sink is and which
 design questions are deliberately open.

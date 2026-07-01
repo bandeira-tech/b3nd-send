@@ -1,7 +1,7 @@
-# @bandeira-tech/b3nd-sink
+# @bandeira-tech/b3nd-send
 
 The **egress layer** for B3nd. Where `b3nd-move` is transport and
-`b3nd-save` is persistence, `b3nd-sink` is integrations with external
+`b3nd-save` is persistence, `b3nd-send` is integrations with external
 services that B3nd does not own — LLM providers, messaging gateways,
 email APIs, payments, calendars.
 

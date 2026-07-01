@@ -1,8 +1,8 @@
 {
-  "name": "b3nd-sink-workspace",
+  "name": "b3nd-send-workspace",
   "version": "0.0.0",
   "private": true,
-  "description": "npm sidecar for deploying b3nd-sink targets as Cloudflare Workers. Library tests still run via Deno against deno.json — see worker/ for the deploy artefacts.",
+  "description": "npm sidecar for deploying b3nd-send targets as Cloudflare Workers. Library tests still run via Deno against deno.json — see worker/ for the deploy artefacts.",
   "type": "module",
   "scripts": {
     "worker:dev": "wrangler --config worker/wrangler.toml dev",

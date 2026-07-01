@@ -1,5 +1,5 @@
 /**
- * whatsapp-rig — a Cloudflare Worker that mounts the b3nd-sink whatsapp
+ * whatsapp-rig — a Cloudflare Worker that mounts the b3nd-send whatsapp
  * client and exposes its surface as HTTP.
  *
  * Routes:

@@ -1,8 +1,8 @@
-# Vision — b3nd-sink
+# Vision — b3nd-send
 
-`b3nd-sink` is the **egress layer** of B3nd. Where `b3nd-move` is about
+`b3nd-send` is the **egress layer** of B3nd. Where `b3nd-move` is about
 transport between B3nd nodes and `b3nd-save` is about persisting payloads
-into storage you control, `b3nd-sink` is about handing payloads off to
+into storage you control, `b3nd-send` is about handing payloads off to
 **external services that B3nd does not own**: an LLM provider, a messaging
 gateway, an email API, a payments processor, a calendar.
 
@@ -10,6 +10,17 @@ A sink takes `[uri, payload]` tuples destined for an outside system,
 performs whatever side effect that system requires, and returns
 `Output[]` describing what happened — the same shape every other piece
 of B3nd speaks.
+
+## Naming: the package is *send*, the concept is *sink*
+
+Decision (2026-07-02): the package, repo, and public vocabulary say
+**send** — the third verb of the public protocol trinity move / save /
+send. The word **sink** survives as the internal concept noun for an
+egress adapter (a sink takes tuples and hands them to an outside
+service), the same way "bend" survives only as the wordmark. Exported
+symbols keep the concept noun (`createWhatsAppSink`, `ClaudeCodeSink`)
+because they name adapters, not the verb; user-facing copy never says
+"sink".
 
 ## What "external" means
 

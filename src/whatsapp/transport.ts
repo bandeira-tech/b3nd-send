@@ -4,7 +4,7 @@
  * Structurally this is a **move transport**, not a sink helper — it
  * receives an HTTP request, decodes a wire format (Meta's webhook
  * envelope) into `Output[]`, and forwards into a downstream rig. The
- * only reason it lives in `b3nd-sink/whatsapp` today is to avoid
+ * only reason it lives in `b3nd-send/whatsapp` today is to avoid
  * forking `b3nd-move` in a stop-gap iteration; the shape here is the
  * spec for the eventual move-side implementation.
  *

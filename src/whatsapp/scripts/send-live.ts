@@ -42,7 +42,7 @@ if (!phoneNumberId || !accessToken || !to) {
 const templateName = Deno.env.get("WA_TEMPLATE_NAME") ?? "hello_world";
 const templateLang = Deno.env.get("WA_TEMPLATE_LANG") ?? "en_US";
 const text = Deno.env.get("WA_TEXT") ??
-  `b3nd-sink whatsapp smoke ${new Date().toISOString()}`;
+  `b3nd-send whatsapp smoke ${new Date().toISOString()}`;
 const graphVersion = Deno.env.get("WA_GRAPH_VERSION");
 
 const sink = createWhatsAppSink({
