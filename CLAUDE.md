@@ -84,3 +84,12 @@ core API moves; do not generate import paths from memory.
   contract across very different services, not to wrap Twilio nicely.
 - Not opinionated about identity, idempotency, retries, or batching
   — see VISION for the open questions.
+
+## Release rule
+
+Releasing any `@bandeira-tech` package requires, **same day**: bumping its pin
+in every direct workspace consumer and publishing their patch releases. The
+`dep-drift` CI job (running on every PR and weekly) fails when a pin lags
+JSR latest — a failing dep-drift check blocks the PR.
+
+Run `deno task check:deps` locally before opening a PR that touches pins.
