@@ -7,11 +7,7 @@ import {
   type StatusResult,
 } from "@bandeira-tech/b3nd-core";
 import { createWebhook, type WhatsAppWebhook } from "./webhook.ts";
-import {
-  DEFAULT_BASE_PATH,
-  whatsappUris,
-  type WhatsAppUris,
-} from "./uris.ts";
+import { DEFAULT_BASE_PATH, type WhatsAppUris, whatsappUris } from "./uris.ts";
 import type {
   WhatsAppErrorResponse,
   WhatsAppSendPayload,

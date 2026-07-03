@@ -46,7 +46,8 @@ function recorder(opts?: { throws?: Error }): Recorder {
 
 function makeService(
   rec: Recorder,
-  overrides: { pathPrefix?: string; appSecret?: string; verifyToken?: string } = {},
+  overrides: { pathPrefix?: string; appSecret?: string; verifyToken?: string } =
+    {},
 ): WhatsAppHttpService {
   // Explicit `in` checks so callers can pass `undefined` to clear a
   // value; bare `??` would fall through to the test default.
@@ -128,7 +129,9 @@ Deno.test("GET: 500 if verifyToken not configured", async () => {
   const rec = recorder();
   const svc = makeService(rec, { verifyToken: undefined });
   const res = await svc.fetch(
-    new Request("https://w/whatsapp?hub.mode=subscribe&hub.verify_token=vt&hub.challenge=ch"),
+    new Request(
+      "https://w/whatsapp?hub.mode=subscribe&hub.verify_token=vt&hub.challenge=ch",
+    ),
   );
   assertEquals(res!.status, 500);
 });
@@ -152,7 +155,10 @@ Deno.test("POST: parses + forwards tuples to downstream receive, returns 200", a
 
   assertEquals(rec.calls.length, 1);
   assertEquals(rec.calls[0].length, 2);
-  assertEquals(rec.calls[0][0][0], inboundUri(DEFAULT_BASE_PATH, "15555550100"));
+  assertEquals(
+    rec.calls[0][0][0],
+    inboundUri(DEFAULT_BASE_PATH, "15555550100"),
+  );
   assertEquals(rec.calls[0][1][0], statusUri(DEFAULT_BASE_PATH, "wamid.OUT1"));
 });
 
@@ -272,7 +278,9 @@ Deno.test("pathPrefix='' mounts at the root", async () => {
   const rec = recorder();
   const svc = makeService(rec, { pathPrefix: "" });
   const res = await svc.fetch(
-    new Request("https://w/?hub.mode=subscribe&hub.verify_token=vt&hub.challenge=q"),
+    new Request(
+      "https://w/?hub.mode=subscribe&hub.verify_token=vt&hub.challenge=q",
+    ),
   );
   assertEquals(res!.status, 200);
 });

@@ -7,6 +7,6 @@ export { ClaudeCodeSink } from "./client.ts";
 export type {
   ClaudeCodeSinkConfig,
   RunEvent,
-  RunRequest,
   Runner,
+  RunRequest,
 } from "./types.ts";

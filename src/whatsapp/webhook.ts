@@ -37,7 +37,10 @@ export interface WhatsAppWebhook {
    * Returns true on match. Throws if the sink wasn't configured with an
    * `appSecret` — silently accepting unsigned traffic is a footgun.
    */
-  verifySignature(rawBody: string, signatureHeader: string | null): Promise<boolean>;
+  verifySignature(
+    rawBody: string,
+    signatureHeader: string | null,
+  ): Promise<boolean>;
 
   /**
    * Verify signature, then parse the body into B3nd tuples.

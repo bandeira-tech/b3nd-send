@@ -14,8 +14,8 @@ export {
   statusPattern,
   statusUri,
   validateBasePath,
-  whatsappUris,
   type WhatsAppUris,
+  whatsappUris,
 } from "./uris.ts";
 export type {
   NormalizedInbound,

@@ -160,7 +160,10 @@ Deno.test("receive: unknown uri scheme refused without HTTP call", async () => {
 Deno.test("receive: empty recipient refused without HTTP call", async () => {
   const { fetch, calls } = mockFetch(() => okResponse());
   const sink = createWhatsAppSink({ ...baseConfig, fetch });
-  const [result] = await sink.receive([[`${DEFAULT_BASE_PATH}messages/`, textPayload]]);
+  const [result] = await sink.receive([[
+    `${DEFAULT_BASE_PATH}messages/`,
+    textPayload,
+  ]]);
   assertEquals(result.accepted, false);
   assertEquals(result.errorDetail?.code, ErrorCode.INVALID_URI);
   assertEquals(calls.length, 0);
@@ -243,8 +246,7 @@ Deno.test("receive: fetch failure propagates (transport throws)", async () => {
     Promise.reject(new TypeError("network down"));
   const sink = createWhatsAppSink({ ...baseConfig, fetch });
   await assertRejects(
-    () =>
-      sink.receive([[M("+15555550100"), textPayload]]),
+    () => sink.receive([[M("+15555550100"), textPayload]]),
     TypeError,
     "network down",
   );
@@ -299,7 +301,10 @@ Deno.test("sink.uris exposes helpers bound to the configured basePath", () => {
   assertEquals(sink.uris.basePath, DEFAULT_BASE_PATH);
   assertEquals(sink.uris.messages("+1"), `${DEFAULT_BASE_PATH}messages/+1`);
   assertEquals(sink.uris.inbound("+1"), `${DEFAULT_BASE_PATH}inbound/+1`);
-  assertEquals(sink.uris.status("wamid.x"), `${DEFAULT_BASE_PATH}status/wamid.x`);
+  assertEquals(
+    sink.uris.status("wamid.x"),
+    `${DEFAULT_BASE_PATH}status/wamid.x`,
+  );
   assertEquals(sink.uris.messagesPattern, `${DEFAULT_BASE_PATH}messages/**`);
 });
 

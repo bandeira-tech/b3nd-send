@@ -12,8 +12,8 @@ import type {
 import type {
   ClaudeCodeSinkConfig,
   RunEvent,
-  RunRequest,
   Runner,
+  RunRequest,
 } from "./types.ts";
 
 const RUN_URI = /^claude-code:\/\/run\/([^/]+)$/;

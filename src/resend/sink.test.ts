@@ -78,7 +78,10 @@ Deno.test("receive: forwards idempotencyKey as Idempotency-Key header", async ()
   );
   const sink = createResendSink({ apiKey: "re_test", fetch });
 
-  await sink.receive([[URI_EMAILS, { ...samplePayload, idempotencyKey: "k1" }]]);
+  await sink.receive([[URI_EMAILS, {
+    ...samplePayload,
+    idempotencyKey: "k1",
+  }]]);
 
   assertEquals(calls[0].headers.get("Idempotency-Key"), "k1");
 });
@@ -129,7 +132,9 @@ Deno.test("receive: 401 surfaces as UNAUTHORIZED refusal", async () => {
 });
 
 Deno.test("receive: unknown uri refused without HTTP call", async () => {
-  const { fetch, calls } = mockFetch(() => new Response("nope", { status: 500 }));
+  const { fetch, calls } = mockFetch(() =>
+    new Response("nope", { status: 500 })
+  );
   const sink = createResendSink({ apiKey: "re_test", fetch });
 
   const [result] = await sink.receive([
@@ -142,7 +147,9 @@ Deno.test("receive: unknown uri refused without HTTP call", async () => {
 });
 
 Deno.test("receive: missing email field refused without HTTP call", async () => {
-  const { fetch, calls } = mockFetch(() => new Response("nope", { status: 500 }));
+  const { fetch, calls } = mockFetch(() =>
+    new Response("nope", { status: 500 })
+  );
   const sink = createResendSink({ apiKey: "re_test", fetch });
 
   const [result] = await sink.receive([[URI_EMAILS, {} as ResendPayload]]);

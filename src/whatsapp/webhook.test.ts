@@ -201,7 +201,10 @@ Deno.test("webhook.parse: throws on malformed JSON even with valid signature", a
 
 Deno.test("webhook.parse: empty envelope yields zero tuples", async () => {
   const sink = createWhatsAppSink(config);
-  const body = JSON.stringify({ object: "whatsapp_business_account", entry: [] });
+  const body = JSON.stringify({
+    object: "whatsapp_business_account",
+    entry: [],
+  });
   const sig = `sha256=${await signHex("secret", body)}`;
   const tuples = await sink.webhook.parse(body, sig);
   assertEquals(tuples.length, 0);

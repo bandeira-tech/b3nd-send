@@ -40,8 +40,9 @@ const results = await sink.receive([[
       from,
       to,
       subject,
-      text:
-        `This is a smoke test from b3nd-send/resend.\n\nSent at ${new Date().toISOString()}.`,
+      text: `This is a smoke test from b3nd-send/resend.\n\nSent at ${
+        new Date().toISOString()
+      }.`,
     },
   },
 ]]);
