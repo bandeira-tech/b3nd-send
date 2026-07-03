@@ -90,7 +90,7 @@ export class ClaudeCodeSink implements ProtocolInterfaceNode {
     throw new Error("claude-code sink does not implement observe");
   }
 
-  status() {
+  status(): Promise<{ status: "healthy"; details: { liveRuns: number } }> {
     return Promise.resolve({
       status: "healthy" as const,
       details: { liveRuns: this.#live.size },
