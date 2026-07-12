@@ -37,10 +37,6 @@ Set via wrangler vars (non-sensitive) and wrangler secrets (sensitive).
 From the worktree root:
 
 ```sh
-# Run from a shell where CLOUDFLARE_API_TOKEN is unset, so wrangler
-# falls back to its OAuth session. The user's tested workflow:
-unset CLOUDFLARE_API_TOKEN
-
 # First deploy — pass vars on the CLI so they don't live in the toml.
 npx wrangler deploy \
   --config worker/wrangler.toml \
@@ -62,15 +58,9 @@ curl https://whatsapp-rig.<account>.workers.dev/healthz
 curl https://whatsapp-rig.<account>.workers.dev/smoke
 ```
 
-If `wrangler` errors with `Failed to automatically retrieve account
-IDs`, that usually means `CLOUDFLARE_API_TOKEN` is set in the
-environment but lacks `account:read`. Unset it and let the OAuth
-session take over.
-
 ## Local dev
 
 ```sh
-unset CLOUDFLARE_API_TOKEN
 # Stash WA_ACCESS_TOKEN in worker/.dev.vars (gitignored):
 echo "WA_ACCESS_TOKEN=<token>" > worker/.dev.vars
 npx wrangler dev --config worker/wrangler.toml
